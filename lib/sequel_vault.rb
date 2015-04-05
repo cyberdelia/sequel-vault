@@ -18,11 +18,11 @@ module Sequel
             attrs.each do |attr|
               define_method(attr) do
                 cypher = super()
-                decrypt(keys, cypher)
+                decrypt(keys, cypher) unless cypher.nil?
               end
 
               define_method("#{attr}=") do |plain|
-                cypher = encrypt(keys, plain)
+                cypher = encrypt(keys, plain) unless plain.nil?
                 super(cypher)
               end
             end

@@ -25,4 +25,11 @@ describe Sequel::Plugins::Vault do
     expect(model.values[:secret]).to_not eq(secret)
     expect(model.secret).to eq(secret)
   end
+
+  it "should allow nil value" do
+    model.class.vault_attributes(keys, :secret)
+    model.secret = nil
+    expect(model.values[:secret]).to be_nil
+    expect(model.secret).to be_nil
+  end
 end
