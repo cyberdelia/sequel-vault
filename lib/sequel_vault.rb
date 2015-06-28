@@ -22,8 +22,11 @@ module Sequel
               end
 
               define_method("#{attr}=") do |plain|
-                cypher = encrypt(keys, plain) unless plain.nil?
+                return if plain.nil?
+                cypher = encrypt(keys, plain)
+                digest = OpenSSL::HMAC.digest('sha512', keys.first, plain)
                 super(cypher)
+                send("#{attr}_digest=", digest)
               end
             end
           end
