@@ -4,8 +4,6 @@ require "sequel"
 module Sequel
   module Plugins
     module Vault
-      class InvalidCiphertext < Exception; end
-
       def self.apply(model, keys = [], *attrs)
         model.instance_eval do
           @vault_attrs = attrs
@@ -75,16 +73,16 @@ module Sequel
             next unless verifier.valid?
             return verifier.message
           end
-          raise InvalidCiphertext, "Could not decrypt field"
+          cypher # Return cypher has it's probably just plain text
         end
       end
 
       module InstanceMethods
         def []=(attr, plain)
           if model.vault_attrs.include?(attr) && !plain.nil?
-            send("#{attr}_digest=", self.class.digest(model.vault_keys, plain))
+            send("#{attr}_digest=", self.class.digest(model.vault_keys, plain)) if model.columns.include?(:"#{attr}_digest")
+            send("key_id=", model.vault_keys.length) if model.columns.include?(:key_id)
             value = self.class.encrypt(model.vault_keys, plain)
-            super(:key_id, model.vault_keys.length) if model.columns.include?(:key_id)
           end
           super(attr, value || plain)
         end
