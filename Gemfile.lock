@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sequel_vault (0.4)
+    sequel_vault (0.5)
       fernet (~> 2.1, >= 2.1)
       sequel (~> 4.21, >= 4.21.0)
 
