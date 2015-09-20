@@ -15,12 +15,12 @@ describe Sequel::Plugins::Vault do
   let(:dataset) { klass.dataset }
   let(:model) { klass.new }
   let(:keys) do
-    ["woRXJWevRaxZLxgoiEQtCDPBSf9TNg57bki0RUK1U48=",
-     "fih3l0Z9e4NBpy5KIj+rmXVexY5O9LspzuqCFyqavjg="]
+    ["fih3l0Z9e4NBpy5KIj+rmXVexY5O9LspzuqCFyqavjg=",
+     "woRXJWevRaxZLxgoiEQtCDPBSf9TNg57bki0RUK1U48="]
   end
   let(:secret) { "Attack at once." }
   let(:cypher) { klass.encrypt(keys, secret) }
-  let(:digest) { OpenSSL::HMAC.digest('sha512', keys.first, secret) }
+  let(:digest) { OpenSSL::HMAC.digest('sha512', keys.last, secret) }
 
   it "should encrypt vault attributes" do
     klass.vault_attributes(keys, :secret)

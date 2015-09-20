@@ -40,11 +40,11 @@ module Sequel
         end
 
         def digest(keys, plain)
-          OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Array(keys).first, plain)
+          OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Array(keys).last, plain)
         end
 
         def encrypt(keys, plain)
-          ::Fernet.generate(keys.first, plain)
+          ::Fernet.generate(keys.last, plain)
         end
 
         def decrypt(keys, cypher)
