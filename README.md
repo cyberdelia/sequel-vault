@@ -2,6 +2,20 @@
 
 Use [fernet](https://github.com/fernet/fernet-rb) to encrypt columns values in your Sequel database
 
+## Installation
+
+Install it directly using gem:
+
+```
+gem install sequel_vault
+```
+
+Or adding it to your ``Gemfile``:
+
+```
+gem "sequel_vault"
+```
+
 ## Usage
 
 ```ruby
