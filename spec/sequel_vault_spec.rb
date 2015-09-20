@@ -7,7 +7,7 @@ describe Sequel::Plugins::Vault do
     Class.new(Sequel::Model(db[:vm])) do
       set_primary_key :id
       unrestrict_primary_key
-      set_columns([:id, :secret, :secret_digest])
+      set_columns([:id, :secret, :secret_digest, :key_id])
 
       plugin :vault
     end
@@ -27,6 +27,7 @@ describe Sequel::Plugins::Vault do
     model.secret = secret
     expect(model.values[:secret]).to_not eq(secret)
     expect(model.secret).to eq(secret)
+    expect(model.key_id).to eq(2)
   end
 
   it "should allow nil value" do
@@ -34,6 +35,7 @@ describe Sequel::Plugins::Vault do
     model.secret = nil
     expect(model.values[:secret]).to be_nil
     expect(model.secret).to be_nil
+    expect(model.key_id).to be_nil
   end
 
   it "should write a digest of the value" do
@@ -41,6 +43,7 @@ describe Sequel::Plugins::Vault do
     model.secret = secret
     expect(model.values[:secret_digest]).to_not eq(secret)
     expect(model.secret_digest).to eq(digest)
+    expect(model.key_id).to eq(2)
   end
 
   it "should provide a digest lookup" do

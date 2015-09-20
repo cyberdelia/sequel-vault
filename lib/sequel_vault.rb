@@ -65,6 +65,7 @@ module Sequel
           if model.vault_attrs.include?(attr) && !plain.nil?
             send("#{attr}_digest=", self.class.digest(model.vault_keys, plain))
             value = self.class.encrypt(model.vault_keys, plain)
+            super(:key_id, model.vault_keys.length) if model.columns.include?(:key_id)
           end
           super(attr, value || plain)
         end
