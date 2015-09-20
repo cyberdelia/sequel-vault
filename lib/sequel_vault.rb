@@ -17,20 +17,27 @@ module Sequel
         model.vault_attributes(keys, *attrs) unless attrs.empty?
       end
 
+      # @!attribute [r] vault_attrs
+      #   @return [Array<Symbol>] array of all attributes to be encrypted
+      # @!attribute [r] vault_keys
+      #   @return [Array<String>] array of all keys to be used.
       module ClassMethods
         attr_reader :vault_attrs
         attr_reader :vault_keys
-        attr_reader :vault_module
 
         Plugins.inherited_instance_variables(self, :@vault_attrs => :dup, :@vault_keys => :dup)
 
-        def vault_attributes(keys, *attrs)
-          raise(Error, 'must provide both keys name and attrs when setting up vault') unless keys && attrs
+        # Setup vault with the given keys for the given attributes.
+        #
+        # @param [Array<String>] keys to be used
+        # @param [Array<Symbol>] attributes that will be encrypted
+        def vault_attributes(keys, *attributes)
+          raise(Error, 'must provide both keys name and attrs when setting up vault') unless keys && attributes
           @vault_keys = keys
-          @vault_attrs = attrs
+          @vault_attrs = attributes
 
           self.class.instance_eval do
-            attrs.each do |attr|
+            attributes.each do |attr|
               define_method("#{attr}_lookup") do |plain|
                 digests = keys.map { |key| Sequel.blob(digest(key, plain)) }
                 where("#{attr}_digest": digests).first
@@ -39,14 +46,29 @@ module Sequel
           end
         end
 
+        # Returns the HMAC digest of plain text.
+        #
+        # @param [Array<String>] keys to be used
+        # @param [String] plain text
+        # @return [String] HMAC digest of the plain text
         def digest(keys, plain)
           OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha512'), Array(keys).last, plain)
         end
 
+        # Returns the encrypted version of plain text.
+        #
+        # @param [Array<String>] keys to be used
+        # @param [String] plain text
+        # @return [String] encrypted version of the plain text
         def encrypt(keys, plain)
           ::Fernet.generate(keys.last, plain)
         end
 
+        # Returns the decryped version of encrypted text.
+        #
+        # @param [Array<String>] keys to be used
+        # @param [String] cypher text
+        # @return [String] plain version of the cypher text
         def decrypt(keys, cypher)
           keys.each do |key|
             verifier = ::Fernet.verifier(key, cypher, enforce_ttl: false)
@@ -55,9 +77,6 @@ module Sequel
           end
           raise InvalidCiphertext, "Could not decrypt field"
         end
-      end
-
-      module DatasetMethods
       end
 
       module InstanceMethods
