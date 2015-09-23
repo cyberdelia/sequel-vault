@@ -80,8 +80,8 @@ module Sequel
       module InstanceMethods
         def []=(attr, plain)
           if model.vault_attrs.include?(attr) && !plain.nil?
-            send("#{attr}_digest=", self.class.digest(model.vault_keys, plain)) if model.columns.include?(:"#{attr}_digest")
-            send("key_id=", model.vault_keys.length) if model.columns.include?(:key_id)
+            send("#{attr}_digest=", self.class.digest(model.vault_keys, plain)) if respond_to?("#{attr}_digest=")
+            send("key_id=", model.vault_keys.length) if respond_to?("key_id=")
             value = self.class.encrypt(model.vault_keys, plain)
           end
           super(attr, value || plain)
