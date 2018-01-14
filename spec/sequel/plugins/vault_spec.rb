@@ -45,7 +45,7 @@ describe Sequel::Plugins::Vault do
     expect(model.key_id).to eq(2)
   end
 
-  it 'should provide a digest lookup' do
+  it 'provides a digest lookup' do
     klass.dataset = dataset.with_fetch([{ id: 1, secret: cypher, secret_digest: digest }])
     klass.vault_attributes(keys, :secret)
     lookup = klass.secret_lookup('secret')
